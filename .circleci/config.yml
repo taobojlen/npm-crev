@@ -1,56 +1,33 @@
----
-version: 2
+version: 2.1
+orbs:
+  node: circleci/node@4.1.0
+
 jobs:
-  node-latest: &test
-    docker:
-      - image: node:latest
-    working_directory: ~/cli
+  test-node-latest: &test-steps
+    executor:
+      name: node/default
     steps:
       - checkout
-      - restore_cache: &restore_cache
-          keys:
-            - v1-npm-{{checksum ".circleci/config.yml"}}-{{checksum "package-lock.json"}}
-            - v1-npm-{{checksum ".circleci/config.yml"}}
+      - node/install-packages
       - run:
-          name: Install dependencies
-          command: npm ci
-      - run: ./bin/run --version
-      - run: ./bin/run --help
-      - run:
-          name: Testing
-          command: npm test
-  node-12:
-    <<: *test
-    docker:
-      - image: node:12
-  node-10:
-    <<: *test
-    docker:
-      - image: node:10
-  cache:
-    <<: *test
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: npm ci
-      - save_cache:
-          key: v1-npm-{{checksum ".circleci/config.yml"}}-{{checksum "package-lock.json"}}
-          paths:
-            - ~/cli/node_modules
-            - ~/.npm
-            - /usr/local/lib/node_modules
+          command: npm run test
+
+  test-node-14:
+    <<: *test-steps
+    executor:
+      name: node/default
+      tag: '14.15'
+
+  test-node-12:
+    <<: *test-steps
+    executor:
+      name: node/default
+      tag: '12.20'
 
 workflows:
-  version: 2
-  "crev":
+  test:
     jobs:
-      - node-latest
-      - node-12
-      - node-10
-      - cache:
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+      - test-node-latest
+      - test-node-14
+      - test-node-12
+
