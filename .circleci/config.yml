@@ -1,33 +1,32 @@
 version: 2.1
 orbs:
   node: circleci/node@4.1.0
+  codecov: codecov/codecov@1.1.3
 
 jobs:
-  test-node-latest: &test-steps
+  test:
+    parameters:
+      version:
+        type: string
     executor:
       name: node/default
+      tag: << parameters.version >>
     steps:
       - checkout
       - node/install-packages
       - run:
           command: npm run test
-
-  test-node-14:
-    <<: *test-steps
-    executor:
-      name: node/default
-      tag: '14.15'
-
-  test-node-12:
-    <<: *test-steps
-    executor:
-      name: node/default
-      tag: '12.20'
+      - when: 
+          condition:
+            equal: ["current", << parameters.version >>]
+          steps:
+            - codecov/upload:
+                file: coverage/coverage-final.json
 
 workflows:
   test:
     jobs:
-      - test-node-latest
-      - test-node-14
-      - test-node-12
-
+      - test:
+          matrix:
+            parameters:
+              version: ["12.20", "14.15", "current"]
