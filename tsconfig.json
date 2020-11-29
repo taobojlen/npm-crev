@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "importHelpers": true,
+    "lib": ["ES2020.String"],
     "module": "commonjs",
     "outDir": "lib",
     "rootDir": "src",

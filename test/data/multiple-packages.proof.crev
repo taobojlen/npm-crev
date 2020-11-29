@@ -1,0 +1,41 @@
+-----BEGIN CREV PACKAGE REVIEW-----
+version: -1
+date: "2018-12-18T23:10:21.111854021-08:00"
+from:
+  id-type: crev
+  id: FYlr8YoYGVvDwHQxqEIs89reKKDy-oWisoO0qXXEfHE
+  url: "https://github.com/dpc/crev-proofs"
+package:
+  source: "https://crates.io"
+  name: log
+  version: 0.4.6
+  digest: BhDmOOjfESqs8i3z9qsQANH8A39eKklgQKuVtrwN-Tw
+review:
+  thoroughness: low
+  understanding: medium
+  rating: positive
+-----BEGIN CREV PACKAGE REVIEW SIGNATURE-----
+4R2WjtU-avpBznmJYAl44H1lOYgETu3RSNhCDcB4GpqhJbSRkd-eqnUuhHgDUs77OlhUf7BSA0dydxaALwx0Dg
+-----END CREV PACKAGE REVIEW-----
+
+-----BEGIN CREV PACKAGE REVIEW-----
+version: -1
+date: "2018-12-27T15:03:34.189335776-08:00"
+from:
+  id-type: crev
+  id: FYlr8YoYGVvDwHQxqEIs89reKKDy-oWisoO0qXXEfHE
+  url: "https://github.com/dpc/crev-proofs"
+package:
+  source: "https://crates.io"
+  name: crates_io_api
+  version: 0.3.0
+  revision: 734324f1bb29c094dc0749efce3dab8ca6822f45
+  digest: XWZhBHowu-uzuWl_rXm5jDcCfoiLvZT87do09OtS4aQ
+review:
+  thoroughness: low
+  understanding: high
+  rating: positive
+comment: LGTM
+-----BEGIN CREV PACKAGE REVIEW SIGNATURE-----
+jueGBe_uOHxZUPv9hypDdN0uHmWaXSiHEEQMVFXgYxbHst5ZfvqGn1RdeNsBkHnohL__nymXGa_2OSq0EIYdCA
+-----END CREV PACKAGE REVIEW-----
