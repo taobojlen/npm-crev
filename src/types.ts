@@ -12,6 +12,7 @@ interface ProofMetadata {
     date: number;
     from: ProofFrom;
     signature: string;
+    raw: string;
 }
 interface User {
     idType: IdType;
