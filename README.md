@@ -1,21 +1,26 @@
-crev
-====
+# crev
 
 Code REView for npm
 
 <!-- [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io) -->
 <!-- [![Version](https://img.shields.io/npm/v/crev.svg)](https://npmjs.org/package/crev) -->
+
 [![CircleCI](https://circleci.com/gh/taobojlen/npm-crev/tree/main.svg?style=shield)](https://circleci.com/gh/taobojlen/npm-crev/tree/main)
 [![codecov](https://codecov.io/gh/taobojlen/npm-crev/branch/main/graph/badge.svg?token=QBVJOOTP0M)](https://codecov.io/gh/taobojlen/npm-crev)
+
 <!-- [![Downloads/week](https://img.shields.io/npm/dw/crev.svg)](https://npmjs.org/package/crev) -->
 <!-- [![License](https://img.shields.io/npm/l/crev.svg)](https://github.com/taobojlen/npm-crev/blob/master/package.json) -->
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g crev
 $ crev COMMAND
@@ -27,11 +32,15 @@ USAGE
   $ crev COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`crev hello [FILE]`](#crev-hello-file)
-* [`crev help [COMMAND]`](#crev-help-command)
+
+- [`crev hello [FILE]`](#crev-hello-file)
+- [`crev help [COMMAND]`](#crev-help-command)
 
 ## `crev hello [FILE]`
 
@@ -65,4 +74,5 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
+
 <!-- commandsstop -->

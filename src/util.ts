@@ -9,14 +9,14 @@ export const camelizeKeys = <T extends StringObject>(object: T): T => {
     return object;
   }
   return Object.keys(object).reduce((acc: any, key) => {
-    const newKey = camelCase(key)
-    let value = object[key]
+    const newKey = camelCase(key);
+    let value = object[key];
     if (isArray(value)) {
       value = value.map((item) => camelizeKeys(item));
     } else if (isObject(value)) {
       value = camelizeKeys(value);
     }
-    acc[newKey] = value
-    return acc
-  }, {})
-}
+    acc[newKey] = value;
+    return acc;
+  }, {});
+};
