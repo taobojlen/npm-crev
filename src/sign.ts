@@ -1,11 +1,12 @@
 import { sign } from "tweetnacl";
-import { PackageReviewProof, TrustProof } from "./types";
 
 export const verifySignature = (
-  proof: PackageReviewProof | TrustProof
+  rawProof: string,
+  rawSignature: string,
+  rawPublicKey: string
 ): boolean => {
-  const message = Buffer.from(proof.raw);
-  const signature = Buffer.from(proof.signature, "base64");
-  const publicKey = Buffer.from(proof.from.id, "base64");
+  const message = Buffer.from(rawProof);
+  const signature = Buffer.from(rawSignature, "base64");
+  const publicKey = Buffer.from(rawPublicKey, "base64");
   return sign.detached.verify(message, signature, publicKey);
 };

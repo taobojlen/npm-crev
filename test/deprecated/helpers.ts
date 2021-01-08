@@ -1,6 +1,6 @@
-import { PackageReviewProof, TrustProof } from "../src/types";
+import { PackageReviewProof, TrustProof } from "../../src/deprecated/types";
 
-export const expectedPackageProofOne: PackageReviewProof = {
+export const expectedOldPackageProofOne: PackageReviewProof = {
   version: -1,
   date: Date.parse("2018-12-18T23:10:21.111854021-08:00"),
   from: {
@@ -25,7 +25,7 @@ export const expectedPackageProofOne: PackageReviewProof = {
     'version: -1\ndate: "2018-12-18T23:10:21.111854021-08:00"\nfrom:\n  id-type: crev\n  id: FYlr8YoYGVvDwHQxqEIs89reKKDy-oWisoO0qXXEfHE\n  url: "https://github.com/dpc/crev-proofs"\npackage:\n  source: "https://crates.io"\n  name: log\n  version: 0.4.6\n  digest: BhDmOOjfESqs8i3z9qsQANH8A39eKklgQKuVtrwN-Tw\nreview:\n  thoroughness: low\n  understanding: medium\n  rating: positive\n',
 };
 
-export const expectedPackageProofTwo: PackageReviewProof = {
+export const expectedOldPackageProofTwo: PackageReviewProof = {
   version: -1,
   date: Date.parse("2018-12-27T15:03:34.189335776-08:00"),
   from: {
@@ -52,7 +52,7 @@ export const expectedPackageProofTwo: PackageReviewProof = {
     'version: -1\ndate: "2018-12-27T15:03:34.189335776-08:00"\nfrom:\n  id-type: crev\n  id: FYlr8YoYGVvDwHQxqEIs89reKKDy-oWisoO0qXXEfHE\n  url: "https://github.com/dpc/crev-proofs"\npackage:\n  source: "https://crates.io"\n  name: crates_io_api\n  version: 0.3.0\n  revision: 734324f1bb29c094dc0749efce3dab8ca6822f45\n  digest: XWZhBHowu-uzuWl_rXm5jDcCfoiLvZT87do09OtS4aQ\nreview:\n  thoroughness: low\n  understanding: high\n  rating: positive\ncomment: LGTM\n',
 };
 
-export const expectedTrustProof: TrustProof = {
+export const expectedOldTrustProof: TrustProof = {
   version: -1,
   date: Date.parse("2019-04-28T22:05:05.147481998-07:00"),
   from: {
@@ -74,7 +74,7 @@ export const expectedTrustProof: TrustProof = {
     'version: -1\ndate: "2019-04-28T22:05:05.147481998-07:00"\nfrom:\n  id-type: crev\n  id: FYlr8YoYGVvDwHQxqEIs89reKKDy-oWisoO0qXXEfHE\n  url: "https://github.com/dpc/crev-proofs"\nids:\n  - id-type: crev\n    id: YWfa4SGgcW87fIT88uCkkrsRgIbWiGOOYmBbA1AtnKA\n    url: "https://github.com/oherrala/crev-proofs"\ntrust: low\n',
 };
 
-export const badSignatureTrustProof: TrustProof = {
+export const badSignatureOldTrustProof: TrustProof = {
   version: -1,
   date: Date.parse("2019-04-28T22:05:05.147481998-07:00"),
   from: {

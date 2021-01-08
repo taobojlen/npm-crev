@@ -1,43 +1,61 @@
-type Intensity = "low" | "medium" | "high";
-type Rating = "positive" | "neutral" | "negative";
-type IdType = "crev";
+type Intensity = "none" | "low" | "medium" | "high";
+export type Rating = "strong" | "positive" | "neutral" | "negative";
+export type TrustLevel = "distrust" | "none" | "low" | "medium" | "high";
+export type ReviewType = "package review" | "trust";
 
-interface ProofFrom {
+/* Subtypes */
+export interface User {
   idType: "crev";
   id: string;
   url: string;
 }
-interface ProofMetadata {
-  version: number;
-  date: number;
-  from: ProofFrom;
-  signature: string;
-  raw: string;
-}
-interface User {
-  idType: IdType;
-  id: string;
-  url: string;
-}
-interface PackageDetails {
+export interface PackageDetails {
   source: string;
   name: string;
   version: string;
   revision?: string;
   digest: string;
 }
-interface ReviewDetails {
+export interface PackageReviewDetails {
   thoroughness: Intensity;
   understanding: Intensity;
   rating: Rating;
 }
 
-export interface TrustProof extends ProofMetadata {
-  ids: [User];
-  trust: Intensity;
-}
-export interface PackageReviewProof extends ProofMetadata {
-  package: PackageDetails;
-  review: ReviewDetails;
+/* The base that both package reviews and trust proofs share */
+interface ProofMetadata {
+  kind: ReviewType;
+  version: number;
+  date: number;
+  from: User;
   comment?: string;
 }
+
+export interface PackageReviewProof extends ProofMetadata {
+  kind: "package review";
+  package: PackageDetails;
+  review: PackageReviewDetails;
+  packageDiffBase?: any; // TODO
+  alternatives?: any[]; // TODO
+}
+export interface TrustProof extends ProofMetadata {
+  kind: "trust";
+  ids: User[];
+  trust: TrustLevel;
+}
+
+export type CrevProof = PackageReviewProof | TrustProof;
+
+export type VerificationStatus = "pass" | "fail" | "none";
+export interface Verification {
+  status: VerificationStatus;
+  reviewCount: number;
+}
+
+// This ugly type lets functions know what kind of proof
+// is returned based on the a parameter
+export type ProofType<T> = T extends "package review"
+  ? PackageReviewProof
+  : T extends "trust"
+  ? TrustProof
+  : never;

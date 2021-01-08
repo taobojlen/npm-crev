@@ -1,8 +1,1 @@
-export const BEGIN_PACKAGE_REVIEW = "-----BEGIN CREV PACKAGE REVIEW-----";
-export const BEGIN_PACKAGE_REVIEW_SIGNATURE =
-  "-----BEGIN CREV PACKAGE REVIEW SIGNATURE-----";
-export const END_PACKAGE_REVIEW = "-----END CREV PACKAGE REVIEW-----";
-
-export const BEGIN_TRUST = "-----BEGIN CREV TRUST -----";
-export const BEGIN_TRUST_SIGNATURE = "-----BEGIN CREV TRUST SIGNATURE-----";
-export const END_TRUST = "-----END CREV TRUST-----";
+export const CACHE_EXPIRY = 86400000; // 1 day in milliseconds

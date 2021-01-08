@@ -1,20 +1,21 @@
 import * as yaml from "js-yaml";
-import { PackageReviewProof, TrustProof } from "./types";
+import { SignatureError } from "./errors";
+import { verifySignature } from "./sign";
+import { ProofType, ReviewType } from "./types";
 import { camelizeKeys } from "./util";
 
 interface ParsedProof {
-  section: string;
   content: string;
   signature: string;
 }
 const parseProofs = (proofsString: string): ParsedProof[] => {
   const sectionRegex = new RegExp(
     "" +
-      /----- ?BEGIN CREV (?<section>[A-Z ]+) ?-----\r?\n/.source + // Section start
+      /----- ?BEGIN CREV PROOF ?-----\r?\n/.source + // Section start
       /(?<content>[\s\S]*?)\r?\n/.source + // Section content
-      /----- ?BEGIN CREV \k<section> SIGNATURE ?-----\r?\n/.source + // Signature start
+      /----- ?SIGN CREV PROOF ?-----\r?\n/.source + // Signature start
       /(?<signature>[\s\S]*?)\r?\n/.source + // Signature
-      /----- ?END CREV \k<section> ?-----/.source, // Section end
+      /----- ?END CREV PROOF ?-----/.source, // Section end
     "g"
   );
 
@@ -24,29 +25,48 @@ const parseProofs = (proofsString: string): ParsedProof[] => {
     if (!result.groups) {
       continue;
     }
-    const { section, content, signature } = result.groups;
-    output.push({ section, content: `${content}\n`, signature });
+    const { content, signature } = result.groups;
+    output.push({ content: `${content}\n`, signature });
   }
   return output;
 };
 
-const getProofs = (proofsString: string, sectionName: string) =>
-  parseProofs(proofsString).map(({ section, content, signature }) => {
-    if (section !== sectionName) {
-      throw new Error(`Unexpected section: ${section}`);
-    }
+/**
+ * Given a YAML document, returns valid proofs.
+ * Will throw an error on encountering an invalid signature.
+ *
+ * @param proofsString the YAML document to parse (a string)
+ * @param reviewType "package review" or "trust". Filters results to only the given type of proof
+ */
+export const getProofs = <T extends ReviewType>(
+  proofsString: string,
+  reviewType?: T
+): ProofType<T>[] => {
+  const proofs = parseProofs(proofsString).map(({ content, signature }) => {
     const reviewObj = yaml.safeLoad(content) as any;
+    // Verify the proof
+    if (!verifySignature(content, signature, reviewObj.from.id)) {
+      let proofTarget;
+      if (reviewObj.kind === "package review") {
+        proofTarget = reviewObj.package.name;
+      } else {
+        proofTarget = reviewObj.ids[0].id;
+      }
+      throw new SignatureError(
+        `Proof by ${reviewObj.from.id} of ${proofTarget} has an invalid signature`
+      );
+    }
+
     // TODO: verify that all expected keys are in YAML
     return camelizeKeys({
       ...reviewObj,
       date: Date.parse(reviewObj.date),
-      raw: content,
-      signature,
     });
   });
 
-export const getPackageProofs = (proofsString: string): PackageReviewProof[] =>
-  getProofs(proofsString, "PACKAGE REVIEW");
-
-export const getTrustProofs = (proofsString: string): TrustProof[] =>
-  getProofs(proofsString, "TRUST");
+  if (reviewType) {
+    return proofs.filter((proof) => proof.kind === reviewType);
+  } else {
+    return proofs;
+  }
+};

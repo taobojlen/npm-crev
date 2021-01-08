@@ -12,15 +12,14 @@ Code REView for npm
 <!-- [![License](https://img.shields.io/npm/l/crev.svg)](https://github.com/taobojlen/npm-crev/blob/master/package.json) -->
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [crev](#crev)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g crev
 $ crev COMMAND
@@ -32,35 +31,34 @@ USAGE
   $ crev COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
+* [`crev fetch`](#crev-fetch)
+* [`crev help [COMMAND]`](#crev-help-command)
+* [`crev verify`](#crev-verify)
 
-- [`crev hello [FILE]`](#crev-hello-file)
-- [`crev help [COMMAND]`](#crev-help-command)
+## `crev fetch`
 
-## `crev hello [FILE]`
+fetch remote proofs
 
 ```
 USAGE
-  $ crev hello [FILE]
+  $ crev fetch
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
-
-EXAMPLE
-  $ crev hello
-  hello world from ./src/hello.ts!
+  -h, --help  show CLI help
+  --update    update proofs from trusted users
+  --url=url   URl of a git repo
 ```
 
-_See code: [src/commands/hello.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/hello.ts)_
+_See code: [src/commands/fetch.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/fetch.ts)_
 
 ## `crev help [COMMAND]`
+
+display help for crev
 
 ```
 USAGE
@@ -75,4 +73,18 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
 
+## `crev verify`
+
+verify the trust levels of dependencies in the current project
+
+```
+USAGE
+  $ crev verify
+
+OPTIONS
+  -h, --help    show CLI help
+  --clearCache
+```
+
+_See code: [src/commands/verify.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/verify.ts)_
 <!-- commandsstop -->
