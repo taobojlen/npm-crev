@@ -20,8 +20,7 @@ jobs:
           condition:
             equal: ["current", << parameters.version >>]
           steps:
-            - codecov/upload:
-                file: coverage/coverage-final.json
+            - codecov/upload
 
 workflows:
   test:
