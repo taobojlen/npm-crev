@@ -1,0 +1,32 @@
+stages:
+  - test
+
+cache:
+  paths:
+    - node_modules/
+
+.test:
+  stage: test
+  script:
+    - npm install
+    - npm test
+
+test:latest:
+  extends: ".test"
+  image: node:latest
+  cache:
+    key: "node-latest-deps"
+  after_script:
+    - bash <(curl -s https://codecov.io/bash)
+
+test:14:
+  extends: ".test"
+  image: node:14
+  cache:
+    key: "node-14-deps"
+
+test:12:
+  extends: ".test"
+  image: node:12
+  cache:
+    key: "node-12-deps"

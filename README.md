@@ -5,8 +5,8 @@ Code REView for npm
 <!-- [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io) -->
 <!-- [![Version](https://img.shields.io/npm/v/crev.svg)](https://npmjs.org/package/crev) -->
 
-[![CircleCI](https://circleci.com/gh/taobojlen/npm-crev/tree/main.svg?style=shield)](https://circleci.com/gh/taobojlen/npm-crev/tree/main)
-[![codecov](https://codecov.io/gh/taobojlen/npm-crev/branch/main/graph/badge.svg?token=QBVJOOTP0M)](https://codecov.io/gh/taobojlen/npm-crev)
+[![GitLab CI](https://gitlab.com/tao_oat/npm-crev/badges/main/pipeline.svg)](https://gitlab.com/tao_oat/npm-crev/-/commits/main)
+[![codecov](https://codecov.io/gl/tao_oat/npm-crev/branch/main/graph/badge.svg?token=R0XUW8HM0W)](https://codecov.io/gl/tao_oat/npm-crev)
 
 <!-- [![Downloads/week](https://img.shields.io/npm/dw/crev.svg)](https://npmjs.org/package/crev) -->
 <!-- [![License](https://img.shields.io/npm/l/crev.svg)](https://github.com/taobojlen/npm-crev/blob/master/package.json) -->
