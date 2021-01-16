@@ -1,10 +1,11 @@
-import * as hostedGitInfo from "hosted-git-info";
+import hostedGitInfo from "hosted-git-info";
 import * as path from "path";
 import * as fs from "fs";
-import { proofsCachePath, sanitizeUrlForFs } from "./paths";
+import { proofsCachePath } from "./paths";
 import { cloneRepo, pullRepo } from "./git";
 import { getProofs } from "./parser";
 import { ProofType, ReviewType } from "./types";
+import { hashUrlForFs } from "./paths";
 
 /**
  * Fetches a crev proof repo from the given URL.
@@ -22,7 +23,7 @@ export const fetchProofsFromUrl = async (url: string): Promise<string> => {
     throw new Error(`${url} does not appear to be a valid Git repo URL`);
   }
 
-  const outputDir = path.join(proofsCachePath, sanitizeUrlForFs(url));
+  const outputDir = path.join(proofsCachePath, hashUrlForFs(url));
   // See if we already have the repo, in which case we'll update it
   if (fs.existsSync(outputDir)) {
     await pullRepo(outputDir);
@@ -72,7 +73,7 @@ export const getProofsFromRepo = async <T extends ReviewType>(
       const filePath = path.resolve(reviewFolder, file);
       const fileContents = await fs.promises.readFile(filePath);
       // TODO: might be nice not to assume utf-8 encoding
-      const currentProofs = getProofs(fileContents.toString("utf8"), reviewType);
+      const currentProofs = await getProofs(fileContents.toString("utf8"), reviewType);
       proofs = proofs.concat(currentProofs);
     }
   }

@@ -1,35 +1,8 @@
-import { camelCase, isArray, isObject } from "lodash";
 import { exec } from "child_process";
 import * as path from "path";
-
-interface StringObject {
-  [key: string]: any;
-}
-
-export const camelizeKeys = <T extends StringObject>(object: T): T => {
-  if (!isArray(object) && !isObject(object)) {
-    return object;
-  }
-  return Object.keys(object).reduce((acc: any, key) => {
-    const newKey = camelCase(key);
-    let value = object[key];
-    if (isArray(value)) {
-      value = value.map((item) => camelizeKeys(item));
-    } else if (isObject(value)) {
-      value = camelizeKeys(value);
-    }
-    acc[newKey] = value;
-    return acc;
-  }, {});
-};
-
-/**
- * Given a binary string, returns it as URL-safe base64.
- */
-export const binaryToBase64 = (input: string): string => {
-  const buffer = Buffer.from(input, "binary");
-  return buffer.toString("base64").replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
-};
+import { promises as fs } from "fs";
+import * as yaml from "js-yaml";
+import { camelizeKeys, decamelizeKeys } from "humps";
 
 export const execPromise = (command: string, cwd?: string): Promise<string> => {
   cwd = cwd || path.resolve(process.cwd());
@@ -41,6 +14,31 @@ export const execPromise = (command: string, cwd?: string): Promise<string> => {
       resolve(stdout);
     });
   });
+};
+
+export const readObjectFromYaml = async <T>(yamlPath: string): Promise<T> => {
+  const yamlString = (await fs.readFile(yamlPath)).toString();
+  return (camelizeKeys(yaml.load(yamlString) as any) as unknown) as T;
+};
+
+export const writeObjectToYaml = async <T>(obj: T, yamlPath: string): Promise<void> => {
+  const withDecamelizedKeys = decamelizeKeys(obj as any, { separator: "-" });
+  const yamlString = yaml.dump(withDecamelizedKeys, { lineWidth: 120, quotingType: '"' } as any);
+  await fs.mkdir(path.dirname(yamlPath), { recursive: true });
+  await fs.writeFile(yamlPath, yamlString);
+};
+
+export const fileExists = async (path: string): Promise<boolean> => {
+  try {
+    const stat = await fs.stat(path);
+    return stat.isFile();
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      return false;
+    } else {
+      throw e;
+    }
+  }
 };
 
 /**

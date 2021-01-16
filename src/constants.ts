@@ -1,1 +1,1 @@
-export const CACHE_EXPIRY = 86400000; // 1 day in milliseconds
+export const CREV_ID_FORMAT_VERSION = -1;

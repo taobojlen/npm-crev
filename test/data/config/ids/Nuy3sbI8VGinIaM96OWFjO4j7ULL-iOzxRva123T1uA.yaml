@@ -1,0 +1,13 @@
+---
+version: -1
+url: "https://gitlab.com/tao_oat/crev-proofs.git"
+public-key: Nuy3sbI8VGinIaM96OWFjO4j7ULL-iOzxRva123T1uA
+sealed-secret-key: tbTnj3ljKpG43k9VVHXMwyhGtOQBzl6K0O6GnHhg2PBsbAkwaFdDXBdZdo6-S-Na
+seal-nonce: ffxX6d8ezKmvuG-w_9LbrrhOImlkLhinvi_v8wM8vig
+pass:
+  version: 19
+  variant: argon2id
+  iterations: 192
+  memory-size: 4096
+  lanes: 12
+  salt: pKUzXfYj_MjXylhH73lXlX2CwpyuZ4x7fmggAOaQTlc
