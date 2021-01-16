@@ -59,3 +59,38 @@ export type ProofType<T> = T extends "package review"
   : T extends "trust"
   ? TrustProof
   : never;
+
+export interface Argon2Options {
+  version: number;
+  variant: string;
+  iterations: number;
+  memorySize: number;
+  lanes?: number;
+  salt: string;
+}
+export interface SealedCrevId {
+  version: number;
+  url: string;
+  publicKey: string;
+  sealedSecretKey: string;
+  sealNonce: string;
+  pass: Argon2Options;
+}
+
+export interface PublicCrevId {
+  version: number;
+  url: string;
+  publicKey: Buffer;
+}
+export interface CrevId extends PublicCrevId {
+  privateKey: Buffer;
+}
+
+export interface CrevConfig {
+  version: number;
+  currentId: {
+    idType: "crev";
+    id: string;
+  };
+  hostSalt: string;
+}

@@ -1,8 +1,8 @@
+import { camelizeKeys } from "humps";
 import * as yaml from "js-yaml";
+import { verifySignature } from "./crypto/signatures";
 import { SignatureError } from "./errors";
-import { verifySignature } from "./sign";
 import { ProofType, ReviewType } from "./types";
-import { camelizeKeys } from "./util";
 
 interface ParsedProof {
   content: string;
@@ -43,9 +43,10 @@ export const getProofs = <T extends ReviewType>(
   reviewType?: T
 ): ProofType<T>[] => {
   const proofs = parseProofs(proofsString).map(({ content, signature }) => {
-    const reviewObj = yaml.safeLoad(content) as any;
+    const reviewObj = yaml.load(content) as any;
     // Verify the proof
-    if (!verifySignature(content, signature, reviewObj.from.id)) {
+    const validSignature = verifySignature(content, signature, reviewObj.from.id);
+    if (!validSignature) {
       let proofTarget;
       if (reviewObj.kind === "package review") {
         proofTarget = reviewObj.package.name;
@@ -58,10 +59,10 @@ export const getProofs = <T extends ReviewType>(
     }
 
     // TODO: verify that all expected keys are in YAML
-    return camelizeKeys({
+    return (camelizeKeys({
       ...reviewObj,
       date: Date.parse(reviewObj.date),
-    });
+    }) as unknown) as ProofType<T>;
   });
 
   if (reviewType) {

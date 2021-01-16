@@ -1,6 +1,5 @@
 import { expect } from "chai";
-
-import { verifySignature } from "../src/sign";
+import { generateKeypair, signData, verifySignature } from "../src/crypto/signatures";
 
 it("verifies a valid signature", () => {
   const proof =
@@ -20,4 +19,12 @@ it("does not verify a bad signature", () => {
   const publicKey = "FYlr8YoYGVvDwHQxqEIs89reKKDy-oWisoO0qXXEfHE";
   const signatureIsValid = verifySignature(proof, signature, publicKey);
   expect(signatureIsValid).to.be.false;
+});
+
+it("verifies its own signatures", () => {
+  const plaintext = "npm-crev: code review for npm";
+  const { publicKey, privateKey } = generateKeypair();
+  const signature = signData(plaintext, privateKey);
+  const isValid = verifySignature(plaintext, signature, publicKey);
+  expect(isValid).to.be.true;
 });

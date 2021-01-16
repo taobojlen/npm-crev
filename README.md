@@ -1,6 +1,6 @@
 # crev
 
-Code REView for npm
+Distributed **c**ode **rev**iew for npm
 
 <!-- [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io) -->
 <!-- [![Version](https://img.shields.io/npm/v/crev.svg)](https://npmjs.org/package/crev) -->
@@ -13,9 +13,33 @@ Code REView for npm
 
 <!-- toc -->
 * [crev](#crev)
+* [Introduction](#introduction)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
+# Introduction
+
+⚠️ **WARNING** ⚠️ Do not use this library for anything real. It currently uses some ugly hacks
+to enforce compatibility with [cargo-crev](https://github.com/crev-dev/cargo-crev). These hacks
+may or may not completely break the cryptographic properties of this project.
+
+`npm-crev` is an implementation of the [crev](https://github.com/crev-dev/crev/) distributed code review system for the npm ecosystem.
+
+> Crev is scalable, distributed, and social. Users publish and circulate results of their reviews: potentially warning about problems, malicious code, or just encouraging high quality by peer review.
+>
+> Crev allows building a personal web of trust in other people and the code they use and review.
+
+npm-crev is far from done, but under active development. **It has not been audited for security**.
+
+## To do:
+
+- [x] Generating IDs
+- [ ] integration tests for `crev verify`
+- [ ] Pushing proof repos
+- [ ] Support for npm <7 and yarn
+- [ ] Customization of verification parameters (what does trust mean to you?)
+- [ ] More!
 
 # Usage
 
@@ -38,6 +62,9 @@ USAGE
 <!-- commands -->
 * [`crev fetch`](#crev-fetch)
 * [`crev help [COMMAND]`](#crev-help-command)
+* [`crev id:create`](#crev-idcreate)
+* [`crev id:list`](#crev-idlist)
+* [`crev id:use [ID]`](#crev-iduse-id)
 * [`crev verify`](#crev-verify)
 
 ## `crev fetch`
@@ -73,6 +100,62 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
 
+## `crev id:create`
+
+create a new crev ID
+
+```
+USAGE
+  $ crev id:create
+
+OPTIONS
+  -h, --help                   show CLI help
+  -p, --passphrase=passphrase  passphrase to encrypt your private key
+  -u, --url=url                URL of the associated Git repo
+```
+
+_See code: [src/commands/id/create.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/id/create.ts)_
+
+## `crev id:list`
+
+list crev IDs
+
+```
+USAGE
+  $ crev id:list
+
+OPTIONS
+  -a, --all               list all known crev IDs
+  -h, --help              show CLI help
+  -x, --extended          show extra columns
+  --columns=columns       only show provided columns (comma-separated)
+  --csv                   output is csv format [alias: --output=csv]
+  --filter=filter         filter property by partial string matching, ex: name=foo
+  --no-header             hide table header from output
+  --no-truncate           do not truncate output to fit screen
+  --output=csv|json|yaml  output in a more machine friendly format
+  --sort=sort             property to sort by (prepend '-' for descending)
+
+ALIASES
+  $ crev id:show
+```
+
+_See code: [src/commands/id/list.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/id/list.ts)_
+
+## `crev id:use [ID]`
+
+switch the current crev ID
+
+```
+USAGE
+  $ crev id:use [ID]
+
+OPTIONS
+  -h, --help  show CLI help
+```
+
+_See code: [src/commands/id/use.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/id/use.ts)_
+
 ## `crev verify`
 
 verify the trust levels of dependencies in the current project
@@ -82,8 +165,7 @@ USAGE
   $ crev verify
 
 OPTIONS
-  -h, --help    show CLI help
-  --clearCache
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/verify.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/verify.ts)_

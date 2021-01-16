@@ -7,12 +7,10 @@
 
 import { promises as fs } from "fs";
 import * as path from "path";
-import * as yaml from "js-yaml";
-import { get } from "lodash";
 import { DirectedGraph } from "graphology";
 import { allSimpleEdgePaths } from "graphology-simple-path";
 
-import { proofsCachePath, configPath } from "./paths";
+import { proofsCachePath } from "./paths";
 import { getProofsFromRepo } from "./repos";
 import {
   User,
@@ -24,6 +22,8 @@ import {
 } from "./types";
 import { DefaultMap } from "./util";
 import { EdgeKeyGeneratorFunction } from "graphology-types";
+import { getCurrentCrevId } from "./id";
+import { toBase64 } from "./crypto/util";
 
 export default class ProofDatabase {
   private selfId: string | undefined;
@@ -32,7 +32,7 @@ export default class ProofDatabase {
   private packages: Map<string, PackageDetails>;
   // Package digest => proofs of that package
   private packageReviewsByPackage: DefaultMap<string, PackageReviewProof[]>;
-  private trustGraph: DirectedGraph;
+  private trustGraph: DirectedGraph<User, TrustProof>;
 
   constructor() {
     this.packages = new Map<string, PackageDetails>();
@@ -48,12 +48,11 @@ export default class ProofDatabase {
     // TODO: count number of new proofs when re-initializing
     // TODO: verify proofs
 
-    const config = await fs.readFile(path.resolve(configPath, "config.yaml"));
-    const configYaml = yaml.safeLoad(config.toString("utf-8"));
-    this.selfId = get(configYaml, ["current-id", "id"]);
-    if (!this.selfId) {
-      throw new Error("Couldn't find your crev ID! Run `crev id --create` to create one.");
+    const currentId = await getCurrentCrevId();
+    if (!currentId) {
+      throw new Error("Couldn't find a crev ID. Run `crev id:create` to create one.");
     }
+    this.selfId = toBase64(currentId.publicKey);
 
     for (const repo of await fs.readdir(proofsCachePath)) {
       const repoPath = path.resolve(proofsCachePath, repo);
@@ -114,6 +113,14 @@ export default class ProofDatabase {
       status,
       reviewCount: trustedReviews.length,
     };
+  }
+
+  public listUsers(): User[] {
+    const ids = [];
+    for (const entry of this.trustGraph.nodeEntries()) {
+      ids.push(entry[1]);
+    }
+    return ids;
   }
 
   private addUser(user: User): void {
