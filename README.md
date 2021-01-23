@@ -20,10 +20,6 @@ Distributed **c**ode **rev**iew for npm
 
 # Introduction
 
-⚠️ **WARNING** ⚠️ Do not use this library for anything real. It currently uses some ugly hacks
-to enforce compatibility with [cargo-crev](https://github.com/crev-dev/cargo-crev). These hacks
-may or may not completely break the cryptographic properties of this project.
-
 `npm-crev` is an implementation of the [crev](https://github.com/crev-dev/crev/) distributed code review system for the npm ecosystem.
 
 > Crev is scalable, distributed, and social. Users publish and circulate results of their reviews: potentially warning about problems, malicious code, or just encouraging high quality by peer review.
@@ -64,12 +60,14 @@ USAGE
 * [`crev help [COMMAND]`](#crev-help-command)
 * [`crev id:create`](#crev-idcreate)
 * [`crev id:list`](#crev-idlist)
+* [`crev id:trust IDS`](#crev-idtrust-ids)
 * [`crev id:use [ID]`](#crev-iduse-id)
-* [`crev verify`](#crev-verify)
+* [`crev review [PACKAGE]`](#crev-review-package)
+* [`crev verify [LOCKFILE]`](#crev-verify-lockfile)
 
 ## `crev fetch`
 
-fetch remote proofs
+fetch proofs from other users
 
 ```
 USAGE
@@ -77,8 +75,9 @@ USAGE
 
 OPTIONS
   -h, --help  show CLI help
+  --all       fetch all repos we know of
   --update    update proofs from trusted users
-  --url=url   URl of a git repo
+  --url=url   URL of a git repo
 ```
 
 _See code: [src/commands/fetch.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/fetch.ts)_
@@ -98,7 +97,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.1/src/commands/help.ts)_
 
 ## `crev id:create`
 
@@ -142,6 +141,23 @@ ALIASES
 
 _See code: [src/commands/id/list.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/id/list.ts)_
 
+## `crev id:trust IDS`
+
+publicly trust another crev ID
+
+```
+USAGE
+  $ crev id:trust IDS
+
+ARGUMENTS
+  IDS  comma-separated list of IDs to trust
+
+OPTIONS
+  -h, --help  show CLI help
+```
+
+_See code: [src/commands/id/trust.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/id/trust.ts)_
+
 ## `crev id:use [ID]`
 
 switch the current crev ID
@@ -156,13 +172,34 @@ OPTIONS
 
 _See code: [src/commands/id/use.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/id/use.ts)_
 
-## `crev verify`
+## `crev review [PACKAGE]`
 
-verify the trust levels of dependencies in the current project
+review a package
 
 ```
 USAGE
-  $ crev verify
+  $ crev review [PACKAGE]
+
+ARGUMENTS
+  PACKAGE  the name of the package to review
+
+OPTIONS
+  -h, --help             show CLI help
+  -v, --version=version  the version to review
+```
+
+_See code: [src/commands/review.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/review.ts)_
+
+## `crev verify [LOCKFILE]`
+
+verify your project's dependencies
+
+```
+USAGE
+  $ crev verify [LOCKFILE]
+
+ARGUMENTS
+  LOCKFILE  path to a npm lockfile
 
 OPTIONS
   -h, --help  show CLI help

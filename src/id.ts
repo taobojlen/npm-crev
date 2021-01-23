@@ -80,9 +80,20 @@ export const unsealCrevId = async (id: string, password: string): Promise<CrevId
 
 export const getCurrentCrevId = async (): Promise<PublicCrevId | undefined> => {
   const configPath = getConfigFilePath();
+  let config;
+  // If there's no config, just return undefined
   try {
-    const config = await readObjectFromYaml<CrevConfig>(configPath);
-    const idPath = path.join(getIdsDirPath(), `${config.currentId.id}.yaml`);
+    config = await readObjectFromYaml<CrevConfig>(configPath);
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      return undefined;
+    } else {
+      throw e;
+    }
+  }
+
+  const idPath = path.join(getIdsDirPath(), `${config.currentId.id}.yaml`);
+  try {
     const id = await readObjectFromYaml<SealedCrevId>(idPath);
     return {
       version: id.version,
@@ -91,7 +102,7 @@ export const getCurrentCrevId = async (): Promise<PublicCrevId | undefined> => {
     };
   } catch (e) {
     if (e.code === "ENOENT") {
-      return undefined;
+      throw new Error(`Couldn't find an ID at ${idPath}`);
     } else {
       throw e;
     }

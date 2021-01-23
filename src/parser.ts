@@ -51,10 +51,10 @@ export const getProofs = <T extends ReviewType>(
       if (reviewObj.kind === "package review") {
         proofTarget = reviewObj.package.name;
       } else {
-        proofTarget = reviewObj.ids[0].id;
+        proofTarget = reviewObj.ids.map((id: any) => id.id).join(", ");
       }
       throw new SignatureError(
-        `Proof by ${reviewObj.from.id} of ${proofTarget} has an invalid signature`
+        `Proof by ${reviewObj.from.id} of [${proofTarget}] has an invalid signature`
       );
     }
 

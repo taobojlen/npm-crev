@@ -1,0 +1,22 @@
+----- BEGIN CREV PROOF -----
+kind: package review
+version: -1
+date: "2021-01-18T18:42:14.956Z"
+from:
+  id-type: crev
+  id: geFF0hJAe-fhR2gd20tyXxVwvlmdmeBIgbRqpgSkZA4
+  url: https://gitlab.com/tao_oat/crev-proofs.git
+package:
+  source: https://www.npmjs.com
+  name: testpackage
+  version: 1.0.0
+  revision: a90921afb4d9a637caa791f923cbf4cdf3171aa5
+  digest: BqzlvkHFaR2SKTnaRSAiRwWN4V8Ct0MmO3GVJ4v-K_M
+review:
+  thoroughness: low
+  understanding: medium
+  rating: positive
+comment: a comment
+----- SIGN CREV PROOF -----
+msgIQhIAR5dnFjeEPAuXsgkkoKoVvnaMGK0ZwLxyUBGSkKFJRBMTqNAKxtfhw62C7s5tnqE0n43D7bRxKX2lBQ
+----- END CREV PROOF -----

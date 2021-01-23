@@ -1,4 +1,4 @@
-type Intensity = "none" | "low" | "medium" | "high";
+export type Level = "none" | "low" | "medium" | "high";
 export type Rating = "strong" | "positive" | "neutral" | "negative";
 export type TrustLevel = "distrust" | "none" | "low" | "medium" | "high";
 export type ReviewType = "package review" | "trust";
@@ -17,8 +17,8 @@ export interface PackageDetails {
   digest: string;
 }
 export interface PackageReviewDetails {
-  thoroughness: Intensity;
-  understanding: Intensity;
+  thoroughness: Level;
+  understanding: Level;
   rating: Rating;
 }
 
@@ -93,4 +93,12 @@ export interface CrevConfig {
     id: string;
   };
   hostSalt: string;
+}
+
+// TODO: handle peer deps
+export type DependencyType = "normal" | "dev";
+export interface Dependency {
+  name: string;
+  version: string;
+  type: DependencyType;
 }

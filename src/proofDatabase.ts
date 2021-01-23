@@ -7,8 +7,10 @@
 
 import { promises as fs } from "fs";
 import * as path from "path";
+
 import { DirectedGraph } from "graphology";
 import { allSimpleEdgePaths } from "graphology-simple-path";
+import { EdgeKeyGeneratorFunction } from "graphology-types";
 
 import { proofsCachePath } from "./paths";
 import { getProofsFromRepo } from "./repos";
@@ -20,10 +22,7 @@ import {
   Verification,
   VerificationStatus,
 } from "./types";
-import { DefaultMap } from "./util";
-import { EdgeKeyGeneratorFunction } from "graphology-types";
-import { getCurrentCrevId } from "./id";
-import { toBase64 } from "./crypto/util";
+import { DefaultMap, folderExists } from "./util";
 
 export default class ProofDatabase {
   private selfId: string | undefined;
@@ -34,7 +33,8 @@ export default class ProofDatabase {
   private packageReviewsByPackage: DefaultMap<string, PackageReviewProof[]>;
   private trustGraph: DirectedGraph<User, TrustProof>;
 
-  constructor() {
+  constructor(selfId?: string) {
+    this.selfId = selfId;
     this.packages = new Map<string, PackageDetails>();
     this.packageReviewsByPackage = new DefaultMap(() => []);
     this.trustGraph = new DirectedGraph<User, TrustProof>({ edgeKeyGenerator: this.getEdgeKey });
@@ -48,11 +48,9 @@ export default class ProofDatabase {
     // TODO: count number of new proofs when re-initializing
     // TODO: verify proofs
 
-    const currentId = await getCurrentCrevId();
-    if (!currentId) {
-      throw new Error("Couldn't find a crev ID. Run `crev id:create` to create one.");
+    if (!(await folderExists(proofsCachePath))) {
+      return;
     }
-    this.selfId = toBase64(currentId.publicKey);
 
     for (const repo of await fs.readdir(proofsCachePath)) {
       const repoPath = path.resolve(proofsCachePath, repo);
@@ -80,6 +78,9 @@ export default class ProofDatabase {
    * Returns the verification status of the package with the given digest.
    */
   public verify(digest: string): Verification {
+    if (!this.selfId) {
+      throw new Error("Cannot verify a package without a current ID");
+    }
     // Get reviews of the package
     const reviews = this.packageReviewsByPackage.get(digest);
     const targetUserIds = reviews.map((review) => review.from.id);
@@ -123,11 +124,19 @@ export default class ProofDatabase {
     return ids;
   }
 
-  private addUser(user: User): void {
-    const { id } = user;
-    if (!this.trustGraph.hasNode(id)) {
-      this.trustGraph.addNode(id, user);
+  public getUser(id: string): User | undefined {
+    if (this.trustGraph.hasNode(id)) {
+      return this.trustGraph.getNodeAttributes(id);
     }
+  }
+
+  private addUser(user: User): void {
+    // TODO: only set url / other attributes if they come from the user themself
+    const { id } = user;
+    this.trustGraph.updateNode(id, (attr) => ({
+      ...attr,
+      ...user,
+    }));
   }
 
   /**

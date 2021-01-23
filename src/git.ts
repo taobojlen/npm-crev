@@ -13,22 +13,22 @@ const getHeadBranch = async (repoPath: string) => {
 };
 
 const checkout = async (repoPath: string, branch: string): Promise<string> => {
-  const command = `git checkout ${branch}`;
+  const command = `git checkout ${branch} --quiet`;
   return execPromise(command, repoPath);
 };
 
 /**
- * Clones a Git repo and checks out the remote's
+ * Clones a Git repo and checks out the remotes
  * HEAD branch (e.g. main or master)
  */
-export const cloneRepo = async (url: string, destination: string): Promise<string> => {
-  const cloneCommand = `git clone ${url} ${destination}`;
+export const cloneRepo = async (url: string, destination: string): Promise<string | void> => {
+  const cloneCommand = `git clone ${url} ${destination} --quiet`;
   return execPromise(cloneCommand)
     .then(() => getHeadBranch(destination))
     .then((branch) => checkout(destination, branch));
 };
 
-export const pullRepo = async (path: string): Promise<string> => {
-  const pullCommand = "git pull --no-rebase";
-  return execPromise(pullCommand, path);
+export const pullRepo = async (repoPath: string): Promise<string> => {
+  const pullCommand = "git pull --no-rebase --quiet";
+  return execPromise(pullCommand, repoPath);
 };
