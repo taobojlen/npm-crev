@@ -43,7 +43,7 @@ describe("unsealCrevId", async () => {
 });
 
 describe("generateCrevId", async () => {
-  const randomTmpDir = tmp.dirSync().name;
+  const randomTmpDir = tmp.dirSync({ unsafeCleanup: true }).name;
   beforeEach(() => {
     sandbox.stub(paths, "getIdsDirPath").returns(randomTmpDir);
     sandbox.stub(cryptoHashes, "getDefaultArgon2Options").returns({

@@ -14,8 +14,14 @@ const configPath = crevPaths.config;
 export function getIdsDirPath(): string {
   return path.join(configPath, "ids");
 }
+export function getProofsDirPath(): string {
+  return path.join(configPath, "proofs");
+}
 export function getConfigFilePath(): string {
   return path.join(configPath, "config.yaml");
+}
+export function getNpmCachePath(): string {
+  return path.join(crevPaths.cache, "npm");
 }
 
 /**

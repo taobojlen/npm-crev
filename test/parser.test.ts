@@ -81,42 +81,42 @@ const expectedTrustOne: TrustProof = {
 
 it("parses a single package proof file", async () => {
   const proofYaml = (await fs.readFile("test/data/single-package.proof.crev")).toString();
-  const proofs = await getProofs(proofYaml);
+  const proofs = getProofs(proofYaml);
   expect(proofs).to.have.lengthOf(1);
   expect(proofs[0]).to.deep.equal(expectedReviewOne);
 });
 
 it("parses a multiple proof file", async () => {
   const proofYaml = (await fs.readFile("test/data/multiple-packages.proof.crev")).toString();
-  const proofs = await getProofs(proofYaml);
+  const proofs = getProofs(proofYaml);
   expect(proofs).to.have.lengthOf(2);
   expect(proofs).to.have.deep.members([expectedReviewOne, expectedReviewTwo]);
 });
 
 it("parses a single trust proof", async () => {
   const proofYaml = (await fs.readFile("test/data/single-trust.proof.crev")).toString();
-  const proofs = await getProofs(proofYaml);
+  const proofs = getProofs(proofYaml);
   expect(proofs).to.have.lengthOf(1);
   expect(proofs[0]).to.deep.equal(expectedTrustOne);
 });
 
 it("handles file with multiple proof types", async () => {
   const proofYaml = (await fs.readFile("test/data/mixed-types.proof.crev")).toString();
-  const proofs = await getProofs(proofYaml);
+  const proofs = getProofs(proofYaml);
   expect(proofs).to.have.lengthOf(2);
   expect(proofs).to.have.deep.members([expectedTrustOne, expectedReviewOne]);
 });
 
 it("filters to only package reviews", async () => {
   const proofYaml = (await fs.readFile("test/data/mixed-types.proof.crev")).toString();
-  const proofs = await getProofs(proofYaml, "package review");
+  const proofs = getProofs(proofYaml, "package review");
   expect(proofs).to.have.lengthOf(1);
   expect(proofs[0]).to.deep.equal(expectedReviewOne);
 });
 
 it("filters to only trust proofs", async () => {
   const proofYaml = (await fs.readFile("test/data/mixed-types.proof.crev")).toString();
-  const proofs = await getProofs(proofYaml, "trust");
+  const proofs = getProofs(proofYaml, "trust");
   expect(proofs).to.have.lengthOf(1);
   expect(proofs[0]).to.deep.equal(expectedTrustOne);
 });

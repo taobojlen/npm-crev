@@ -10,7 +10,7 @@ import { listFiles } from "../../helpers";
 const sandbox = sinon.createSandbox();
 
 describe("id:create", () => {
-  const randomTmpDir = tmp.dirSync().name;
+  const randomTmpDir = tmp.dirSync({ unsafeCleanup: true }).name;
   beforeEach(() => {
     sandbox.stub(paths, "getIdsDirPath").returns(randomTmpDir);
     sandbox.stub(paths, "getConfigFilePath").returns(path.join(randomTmpDir, "config.yaml"));

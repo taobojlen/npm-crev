@@ -7,13 +7,16 @@ import { Argon2Options } from "../types";
 import { maybeConvertBase64 } from "./util";
 
 /**
- * Blake2b-256 hashing algorithm
+ * Blake2b hashing algorithm
+ *
+ * Defaults to blake2b-256, but can be extended to blake2b-512
+ * by passing an outputLength of 64 bytes.
  */
-export const blake2bHash = (message: Buffer | string): Buffer => {
+export const blake2bHash = (message: Buffer | string, outputLength = 32): Buffer => {
   if (typeof message === "string") {
     message = Buffer.from(message);
   }
-  const output = Buffer.alloc(32);
+  const output = Buffer.alloc(outputLength);
   sodium.crypto_generichash(output, message);
   return output;
 };

@@ -1,0 +1,27 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-GLOBPARENT-1016905:
+    - '@oclif/config > globby > fast-glob > glob-parent':
+        reason: no fix yet
+        expires: '2021-02-16T13:09:38.974Z'
+    - '@oclif/plugin-help > @oclif/config > globby > fast-glob > glob-parent':
+        reason: no fix yet
+        expires: '2021-02-16T13:09:38.974Z'
+    - '@oclif/command > @oclif/config > globby > fast-glob > glob-parent':
+        reason: no fix yet
+        expires: '2021-02-16T13:09:38.974Z'
+    - '@oclif/command > @oclif/plugin-help > @oclif/config > globby > fast-glob > glob-parent':
+        reason: no fix yet
+        expires: '2021-02-16T13:09:38.974Z'
+    - cli-ux > @oclif/command > @oclif/config > globby > fast-glob > glob-parent:
+        reason: no fix yet
+        expires: '2021-02-16T13:09:38.974Z'
+    - '@oclif/plugin-help > @oclif/command > @oclif/config > globby > fast-glob > glob-parent':
+        reason: no fix yet
+        expires: '2021-02-16T13:09:38.974Z'
+    - cli-ux > @oclif/command > @oclif/plugin-help > @oclif/config > globby > fast-glob > glob-parent:
+        reason: no fix yet
+        expires: '2021-02-16T13:09:38.974Z'
+patch: {}

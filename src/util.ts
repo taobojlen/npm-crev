@@ -5,9 +5,9 @@ import * as yaml from "js-yaml";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
 export const execPromise = (command: string, cwd?: string): Promise<string> => {
-  cwd = cwd || path.resolve(process.cwd());
+  cwd = cwd || process.cwd();
   return new Promise((resolve, reject) => {
-    exec(command, { cwd }, (error, stdout, stderr) => {
+    exec(command, { cwd, timeout: 10000 }, (error, stdout, stderr) => {
       if (error || stderr) {
         reject(error || stderr);
       }
@@ -21,17 +21,34 @@ export const readObjectFromYaml = async <T>(yamlPath: string): Promise<T> => {
   return (camelizeKeys(yaml.load(yamlString) as any) as unknown) as T;
 };
 
-export const writeObjectToYaml = async <T>(obj: T, yamlPath: string): Promise<void> => {
+export const objectToYaml = (obj: unknown): string => {
   const withDecamelizedKeys = decamelizeKeys(obj as any, { separator: "-" });
-  const yamlString = yaml.dump(withDecamelizedKeys, { lineWidth: 120, quotingType: '"' } as any);
+  return yaml.dump(withDecamelizedKeys, { lineWidth: 120, quotingType: '"' } as any);
+};
+
+export const writeObjectToYaml = async (obj: unknown, yamlPath: string): Promise<void> => {
+  const yamlString = objectToYaml(obj);
   await fs.mkdir(path.dirname(yamlPath), { recursive: true });
   await fs.writeFile(yamlPath, yamlString);
 };
 
-export const fileExists = async (path: string): Promise<boolean> => {
+export const fileExists = async (filePath: string): Promise<boolean> => {
   try {
-    const stat = await fs.stat(path);
+    const stat = await fs.stat(filePath);
     return stat.isFile();
+  } catch (e) {
+    if (e.code === "ENOENT") {
+      return false;
+    } else {
+      throw e;
+    }
+  }
+};
+
+export const folderExists = async (dirPath: string): Promise<boolean> => {
+  try {
+    const stat = await fs.stat(dirPath);
+    return stat.isDirectory();
   } catch (e) {
     if (e.code === "ENOENT") {
       return false;

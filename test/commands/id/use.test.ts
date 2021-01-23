@@ -18,7 +18,7 @@ const publicKey = fromBase64("oqkPkN6dhxH2OJTye06iLqIl3PbBcQwocyUHC6h28jw");
 const privateKey = fromBase64("qLwZgCN4PzynEGB95_Yp-NFzFk6NFnLK0mFmnEpWNJo");
 
 describe("id:use", async () => {
-  const randomTmpDir = tmp.dirSync().name;
+  const randomTmpDir = tmp.dirSync({ unsafeCleanup: true }).name;
   beforeEach(() => {
     sandbox.stub(paths, "getConfigFilePath").returns(path.join(randomTmpDir, "config.yaml"));
     sandbox.stub(paths, "getIdsDirPath").returns(randomTmpDir);

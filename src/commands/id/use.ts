@@ -6,6 +6,7 @@ import { listIds, updateCurrentIdConfig } from "../../id";
 
 export default class Use extends Command {
   static description = "switch the current crev ID";
+  static alisaes = ["id:switch"];
 
   static flags = {
     help: flags.help({ char: "h" }),

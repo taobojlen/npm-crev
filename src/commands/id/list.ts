@@ -1,8 +1,9 @@
 import { Command, flags } from "@oclif/command";
 import chalk from "chalk";
 import { cli } from "cli-ux";
+import { assertCrevIdExists } from "../../commandHelpers";
 import { toBase64 } from "../../crypto/util";
-import { getCurrentCrevId, listIds } from "../../id";
+import { listIds } from "../../id";
 import ProofDatabase from "../../proofDatabase";
 import { TrustLevel } from "../../types";
 
@@ -26,25 +27,12 @@ export default class List extends Command {
   async run(): Promise<void> {
     const { flags } = this.parse(List);
 
-    // Get own IDs
-    const currentId = await getCurrentCrevId();
-    let currentPublicKey = "";
-    if (currentId) {
-      currentPublicKey = toBase64(currentId.publicKey);
-    }
-
     let ids: IdTableRow[] = [];
-    const ownIds: IdTableRow[] = (await listIds()).map((ownId) => ({
-      current: toBase64(ownId.publicKey) === currentPublicKey,
-      publicKey: toBase64(ownId.publicKey),
-      trust: "high",
-      url: ownId.url,
-    }));
-    ids = ids.concat(ownIds);
 
     if (flags.all) {
       // List all known IDs
       const proofDb = new ProofDatabase();
+      await proofDb.initialize();
       proofDb.listUsers().forEach((user) => {
         if (!ids.map((id) => id.publicKey).includes(user.id)) {
           ids.push({
@@ -55,6 +43,21 @@ export default class List extends Command {
           });
         }
       });
+    } else {
+      // Get own IDs
+      const currentId = await assertCrevIdExists(this);
+      let currentPublicKey = "";
+      if (currentId) {
+        currentPublicKey = toBase64(currentId.publicKey);
+      }
+
+      const ownIds: IdTableRow[] = (await listIds()).map((ownId) => ({
+        current: toBase64(ownId.publicKey) === currentPublicKey,
+        publicKey: toBase64(ownId.publicKey),
+        trust: "high", // TODO -- make this happen in proofDB? or fine to assume?
+        url: ownId.url,
+      }));
+      ids = ids.concat(ownIds);
     }
 
     cli.table(
@@ -70,6 +73,7 @@ export default class List extends Command {
         trust: {},
         url: {
           header: "URL",
+          get: (row) => row.url || "unknown",
         },
       },
       {
