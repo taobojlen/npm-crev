@@ -31,11 +31,14 @@ npm-crev is far from done, but under active development. **It has not been audit
 ## To do:
 
 - [x] Generating IDs
-- [ ] integration tests for `crev verify`
+- [x] Fetching repos
+- [x] Trusting others
+- [x] Reviewing packages
+- [ ] Integration tests of commands
 - [ ] Pushing proof repos
 - [ ] Support for npm <7 and yarn
 - [ ] Customization of verification parameters (what does trust mean to you?)
-- [ ] More!
+- [ ] Go through TODOs in code
 
 # Usage
 
