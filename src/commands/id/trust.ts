@@ -1,6 +1,6 @@
 import { Command, flags } from "@oclif/command";
-import * as inquirer from "inquirer";
 import chalk from "chalk";
+import { prompt } from "enquirer";
 
 import { getUnsealedCrevId } from "../../commandHelpers";
 import { TrustLevel, User } from "../../types";
@@ -59,25 +59,26 @@ export default class Trust extends Command {
   private async getTrustLevel(): Promise<TrustLevel> {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const responses = await inquirer.prompt([
-        {
-          name: "trust",
-          message: "How much do you trust this ID",
-          type: "list",
-          choices: [
-            "high",
-            "medium",
-            "low",
-            "none",
-            new inquirer.Separator(),
-            {
-              name: "What do these options mean?",
-              value: "help",
-            },
-          ],
-        },
-      ]);
-      if (responses.trust === "help") {
+      const { trust } = await prompt<{ trust: string }>({
+        name: "trust",
+        message: "How much do you trust this ID",
+        type: "select",
+        choices: [
+          { name: "high" },
+          { name: "medium" },
+          { name: "low" },
+          { name: "none" },
+          {
+            name: "----",
+            role: "separator",
+          },
+          {
+            name: "help",
+            message: "What do these options mean?",
+          },
+        ] as any[],
+      });
+      if (trust === "help") {
         this.log(
           chalk.bold("high"),
           chalk.italic("'I trust this ID as much or more than myself.'"),
@@ -95,35 +96,24 @@ export default class Trust extends Command {
         );
         this.log(chalk.bold("distrust"), chalk.italic("'I distrust this ID and so should you.'\n"));
       } else {
-        return responses.trust;
+        return trust as TrustLevel;
       }
     }
   }
 
   private async getComment(): Promise<string | undefined> {
-    return inquirer
-      .prompt([
-        {
-          name: "addComment",
-          message: "Do you want to add an optional comment to this trust proof?",
-          type: "confirm",
-        },
-      ])
-      .then(({ addComment }) => {
-        if (addComment) {
-          return inquirer.prompt([
-            {
-              name: "comment",
-              message: "Enter your comment",
-              type: "editor",
-            },
-          ]);
-        }
-      })
-      .then((responses) => {
-        if (responses && responses.comment) {
-          return responses.comment.trim();
-        }
+    const { addComment } = await prompt<{ addComment: boolean }>({
+      name: "addComment",
+      message: "Do you want to add an optional comment to this package review?",
+      type: "confirm",
+    });
+    if (addComment) {
+      const { comment } = await prompt<{ comment: string }>({
+        name: "comment",
+        message: "Enter your comment",
+        type: "input",
       });
+      return comment.trim();
+    }
   }
 }

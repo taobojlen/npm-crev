@@ -1,5 +1,6 @@
+import { prompt } from "enquirer";
 import { Command, flags } from "@oclif/command";
-import * as inquirer from "inquirer";
+
 import { toBase64 } from "../../crypto/util";
 
 import { listIds, updateCurrentIdConfig } from "../../id";
@@ -20,17 +21,16 @@ export default class Use extends Command {
     let selectedId;
     if (!args.id) {
       const ownIds = await listIds();
-      selectedId = await inquirer.prompt([
-        {
-          name: "id",
-          message: "Select an ID",
-          type: "list",
-          choices: ownIds.map((id) => ({
-            name: `${toBase64(id.publicKey)} (${id.url})`,
-            value: toBase64(id.publicKey),
-          })),
-        },
-      ]);
+      selectedId = await prompt<{ id: string }>({
+        name: "id",
+        message: "Select an ID",
+        type: "select",
+        choices: ownIds.map((id) => ({
+          name: toBase64(id.publicKey),
+          hint: id.url,
+          value: toBase64(id.publicKey),
+        })),
+      });
       selectedId = selectedId.id;
     } else {
       selectedId = args.id;

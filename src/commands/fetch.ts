@@ -61,7 +61,6 @@ export default class Fetch extends Command {
       }
       await proofDb.initialize();
       cli.action.stop();
-      // cli.action.stop();
       this.log(`Found ${proofDb.listUsers().length - users.length} new users`);
     }
   }

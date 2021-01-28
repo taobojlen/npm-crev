@@ -1,7 +1,7 @@
 import * as path from "path";
 
 import { Command, flags } from "@oclif/command";
-import cli from "cli-ux";
+import { prompt } from "enquirer";
 import hostedGitInfo from "hosted-git-info";
 import chalk from "chalk";
 
@@ -21,7 +21,6 @@ export default class Create extends Command {
   async run(): Promise<void> {
     const { flags } = this.parse(Create);
     let url;
-    let password;
 
     if (flags.url) {
       url = flags.url;
@@ -29,7 +28,12 @@ export default class Create extends Command {
       this.log(
         "Every Crev ID is tied to a Git repo where you can publish your public key and proofs."
       );
-      url = await cli.prompt("Git repo URL");
+      const response = await prompt<{ url: string }>({
+        type: "input",
+        message: "Git repo URL",
+        name: "url",
+      });
+      url = response.url;
     }
     const gitInfo = hostedGitInfo.fromUrl(url, { noCommittish: true, noGitPlus: true });
     if (gitInfo) {
@@ -38,6 +42,7 @@ export default class Create extends Command {
     this.log(`Using URL ${url}.`);
     // TODO: clone repo and fail if not exists or if that ID already exists elsewhere in the DB
 
+    let password;
     if (flags.passphrase) {
       password = flags.passphrase;
     } else {
@@ -47,8 +52,20 @@ export default class Create extends Command {
       );
       let passwordsMatch = false;
       while (!passwordsMatch) {
-        password = await cli.prompt("Passphrase", { type: "hide" });
-        const passwordConfirmation = await cli.prompt("Confirm passphrase", { type: "hide" });
+        password = (
+          await prompt<{ password: string }>({
+            type: "password",
+            name: "password",
+            message: "Passphrase",
+          })
+        ).password;
+        const passwordConfirmation = (
+          await prompt<{ passwordConfirmation: string }>({
+            type: "password",
+            name: "passwordConfirmation",
+            message: "Confirm passphrase",
+          })
+        ).passwordConfirmation;
         passwordsMatch = password === passwordConfirmation;
         if (!passwordsMatch) {
           this.log(chalk.red("Passphrases did not match; please try again."));
@@ -56,7 +73,7 @@ export default class Create extends Command {
       }
     }
 
-    const { publicKey } = await generateCrevId(url, password);
+    const { publicKey } = await generateCrevId(url, password as string);
     const publicKeyB64 = toBase64(publicKey);
     const idPath = path.join(getIdsDirPath(), `${publicKeyB64}.yaml`);
     this.log(`Your new ID, ${publicKeyB64}, was saved to ${idPath}.`);

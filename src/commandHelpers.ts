@@ -4,7 +4,7 @@
  */
 
 import Command from "@oclif/command";
-import { cli } from "cli-ux";
+import { prompt } from "enquirer";
 
 import { getCurrentCrevId, unsealCrevId } from "./id";
 import { CrevId, PublicCrevId } from "./types";
@@ -26,7 +26,11 @@ export const assertCrevIdExists = async (command: Command): Promise<PublicCrevId
 export const getUnsealedCrevId = async (command: Command): Promise<CrevId> => {
   const publicId = await assertCrevIdExists(command);
   const publicKey = toBase64(publicId.publicKey);
-  const password = await cli.prompt("Enter passphrase to unlock", { type: "hide" });
+  const { password } = await prompt<{ password: string }>({
+    type: "password",
+    message: "Enter the passphrase for your crev ID",
+    name: "password",
+  });
   try {
     const id = await unsealCrevId(publicKey, password);
     return id;

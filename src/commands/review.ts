@@ -7,7 +7,7 @@ import chalk from "chalk";
 
 import { fetchNpmPackage, getNpmDownloadPath } from "../npm";
 import { Level, PackageDetails, Rating } from "../types";
-import inquirer from "inquirer";
+import { prompt } from "enquirer";
 import { createPackageReview } from "../proofs";
 import recursiveDigest from "../recursiveDigest";
 import { toBase64 } from "../crypto/util";
@@ -18,14 +18,17 @@ interface PackageAndVersion {
   version: string;
 }
 const LEVEL_CHOICES = [
-  "high",
-  "medium",
-  "low",
-  "none",
-  new inquirer.Separator(),
+  { name: "high" },
+  { name: "medium" },
+  { name: "low" },
+  { name: "none" },
   {
-    name: "What do these options mean?",
-    value: "help",
+    name: "----",
+    role: "separator",
+  },
+  {
+    message: "What do these options mean?",
+    name: "help",
   },
 ];
 
@@ -111,15 +114,15 @@ export default class Review extends Command {
   private async getThoroughness(): Promise<Level> {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const responses = await inquirer.prompt([
+      const { thoroughness } = await prompt<{ thoroughness: string }>([
         {
           name: "thoroughness",
           message: "How thoroughly did you review this package",
-          type: "list",
+          type: "select",
           choices: LEVEL_CHOICES,
         },
       ]);
-      if (responses.thoroughness === "help") {
+      if (thoroughness === "help") {
         this.log(
           chalk.bold("high"),
           "long, deep, focused review, possibly as part of a formal security review"
@@ -136,7 +139,7 @@ export default class Review extends Command {
           chalk.italic("seconds per file")
         );
       } else {
-        return responses.thoroughness;
+        return thoroughness as Level;
       }
     }
   }
@@ -144,21 +147,21 @@ export default class Review extends Command {
   private async getUnderstanding(): Promise<Level> {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const responses = await inquirer.prompt([
+      const { understanding } = await prompt<{ understanding: string }>([
         {
           name: "understanding",
           message: "How well did you understand the code",
-          type: "list",
+          type: "select",
           choices: LEVEL_CHOICES,
         },
       ]);
-      if (responses.understanding === "help") {
+      if (understanding === "help") {
         this.log(chalk.bold("high"), "complete understanding");
         this.log(chalk.bold("medium"), "good understanding");
         this.log(chalk.bold("low"), "some parts are unclear");
         this.log(chalk.bold("none"), "lack of understanding");
       } else {
-        return responses.understanding;
+        return understanding as Level;
       }
     }
   }
@@ -166,61 +169,50 @@ export default class Review extends Command {
   private async getRating(): Promise<Rating> {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const responses = await inquirer.prompt([
+      const { rating } = await prompt<{ rating: string }>([
         {
           name: "rating",
           message: "How do you rate this package",
-          type: "list",
+          type: "select",
           choices: [
-            "strong",
-            "positive",
-            "neutral",
-            "negative",
-            "dangerous",
-            new inquirer.Separator(),
+            { name: "strong" },
+            { name: "positive" },
+            { name: "neutral" },
+            { name: "negative" },
+            { name: "dangerous" },
+            { name: "----", role: "separator" } as any,
             {
-              name: "What do these options mean?",
-              value: "help",
+              name: "help",
+              message: "What do these options mean?",
             },
           ],
         },
       ]);
-      if (responses.rating === "help") {
+      if (rating === "help") {
         this.log(chalk.bold("strong"), "secure and good in all respects, for all applications");
         this.log(chalk.bold("positive"), "secure and OK to use; possibly minor issues");
         this.log(chalk.bold("neutral"), "secure but with flaws");
         this.log(chalk.bold("negative"), "severe flaws and not OK for production usage");
         this.log(chalk.bold("dangerous"), "unsafe to use; severe flaws and/or possibly malicious");
       } else {
-        return responses.rating;
+        return rating as Rating;
       }
     }
   }
 
   private async getComment(): Promise<string | undefined> {
-    return inquirer
-      .prompt([
-        {
-          name: "addComment",
-          message: "Do you want to add an optional comment to this package review?",
-          type: "confirm",
-        },
-      ])
-      .then(({ addComment }) => {
-        if (addComment) {
-          return inquirer.prompt([
-            {
-              name: "comment",
-              message: "Enter your comment",
-              type: "editor",
-            },
-          ]);
-        }
-      })
-      .then((responses) => {
-        if (responses && responses.comment) {
-          return responses.comment.trim();
-        }
+    const { addComment } = await prompt<{ addComment: boolean }>({
+      name: "addComment",
+      message: "Do you want to add an optional comment to this package review?",
+      type: "confirm",
+    });
+    if (addComment) {
+      const { comment } = await prompt<{ comment: string }>({
+        name: "comment",
+        message: "Enter your comment",
+        type: "input",
       });
+      return comment.trim();
+    }
   }
 }
