@@ -1,4 +1,4 @@
-import * as path from "path";
+import path from "path";
 
 import { expect, test } from "@oclif/test";
 import sinon from "sinon";

@@ -1,25 +1,21 @@
-import * as path from "path";
+import mockFs from "mock-fs";
+import { mockCoreFolders } from "../../helpers";
 
 import { expect, test } from "@oclif/test";
-import tmp from "tmp";
-import sinon from "sinon";
 
 import * as paths from "../../../src/paths";
 import { listFiles } from "../../helpers";
 
-const sandbox = sinon.createSandbox();
-
 describe("id:create", () => {
-  const randomTmpDir = tmp.dirSync({ unsafeCleanup: true }).name;
-  beforeEach(() => {
-    sandbox.stub(paths, "getIdsDirPath").returns(randomTmpDir);
-    sandbox.stub(paths, "getConfigFilePath").returns(path.join(randomTmpDir, "config.yaml"));
-  });
-  afterEach(() => {
-    sandbox.restore();
-  });
-
   test
+    .do(() => {
+      mockCoreFolders({
+        "~/.config": mockFs.directory(),
+      });
+    })
+    .finally(() => {
+      mockFs.restore();
+    })
     .stdout()
     .command([
       "id:create",
@@ -32,6 +28,6 @@ describe("id:create", () => {
       expect(ctx.stdout).to.contain("Your new ID");
       expect(ctx.stdout).to.contain("was saved to");
       const idDirFilenames = await listFiles(paths.getIdsDirPath());
-      expect(idDirFilenames.length).to.equal(2); // one is config file
+      expect(idDirFilenames.length).to.equal(1);
     });
 });

@@ -1,5 +1,5 @@
 import { exec } from "child_process";
-import * as path from "path";
+import path from "path";
 import { promises as fs } from "fs";
 import * as yaml from "js-yaml";
 import { camelizeKeys, decamelizeKeys } from "humps";

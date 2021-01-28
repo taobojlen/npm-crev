@@ -23,6 +23,7 @@ export const assertCrevIdExists = async (command: Command): Promise<PublicCrevId
   return currentId;
 };
 
+// TODO: add ability to pass passphrase via command line flag
 export const getUnsealedCrevId = async (command: Command): Promise<CrevId> => {
   const publicId = await assertCrevIdExists(command);
   const publicKey = toBase64(publicId.publicKey);

@@ -1,6 +1,13 @@
-export type Level = "none" | "low" | "medium" | "high";
-export type Rating = "strong" | "positive" | "neutral" | "negative";
-export type TrustLevel = "distrust" | "none" | "low" | "medium" | "high";
+// https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions
+export const levels = ["none", "low", "medium", "high"] as const;
+export type Level = typeof levels[number];
+
+export const ratings = ["strong", "positive", "neutral", "negative"] as const;
+export type Rating = typeof ratings[number];
+
+export const trustLevels = ["distrust", "none", "low", "medium", "high"] as const;
+export type TrustLevel = typeof trustLevels[number];
+
 export type ReviewType = "package review" | "trust";
 
 /* Subtypes */

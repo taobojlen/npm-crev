@@ -1,5 +1,5 @@
 import hostedGitInfo from "hosted-git-info";
-import * as path from "path";
+import path from "path";
 import { promises as fs } from "fs";
 import { proofsCachePath } from "./paths";
 import { cloneRepo, pullRepo } from "./git";

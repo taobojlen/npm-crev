@@ -3,7 +3,7 @@ import chalk from "chalk";
 import { prompt } from "enquirer";
 
 import { getUnsealedCrevId } from "../../commandHelpers";
-import { TrustLevel, User } from "../../types";
+import { trustLevels, TrustLevel, User } from "../../types";
 import ProofDatabase from "../../proofDatabase";
 import { toBase64 } from "../../crypto/util";
 import { createTrustProofs } from "../../proofs";
@@ -13,6 +13,11 @@ export default class Trust extends Command {
 
   static flags = {
     help: flags.help({ char: "h" }),
+    level: flags.string({ description: "how much you trust the IDs", options: [...trustLevels] }),
+    comment: flags.string({ description: "an optional comment for your trust proof" }),
+    "skip-comment": flags.boolean({
+      description: "don't prompt for a comment if one isn't passed",
+    }),
   };
 
   // It's a bit ugly to use a comma-separated list rather than space-separated, but
@@ -23,14 +28,14 @@ export default class Trust extends Command {
   ];
 
   async run(): Promise<void> {
+    const { args, flags } = this.parse(Trust);
     const id = await getUnsealedCrevId(this);
-    const { args } = this.parse(Trust);
 
     // Make sure we know of the IDs we're trying to trust
     const publicKey = toBase64(id.publicKey);
     const proofDb = new ProofDatabase(publicKey);
     await proofDb.initialize();
-    const users: User[] = args.ids.split(",").forEach((id: string) => {
+    const users: User[] = args.ids.split(",").map((id: string) => {
       const user = proofDb.getUser(id);
       if (!user) {
         this.error(
@@ -42,8 +47,16 @@ export default class Trust extends Command {
       return user;
     });
 
-    const trustLevel = await this.getTrustLevel();
-    const comment = await this.getComment();
+    const trustLevel = (flags.level as TrustLevel) || (await this.getTrustLevel());
+    let comment;
+    if (flags.comment) {
+      comment = flags.comment;
+    } else if (flags["skip-comment"]) {
+      // do nothing
+    } else {
+      comment = await this.getComment();
+    }
+
     await createTrustProofs(id, users, trustLevel, comment);
 
     const pluralizedUsers = users.length > 1 ? "users" : "user";

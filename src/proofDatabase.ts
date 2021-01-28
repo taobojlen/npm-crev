@@ -6,7 +6,7 @@
  */
 
 import { promises as fs } from "fs";
-import * as path from "path";
+import path from "path";
 
 import { DirectedGraph } from "graphology";
 import { allSimpleEdgePaths } from "graphology-simple-path";
@@ -47,6 +47,7 @@ export default class ProofDatabase {
     // TODO: handle updated reviews (i.e compare dates)
     // TODO: count number of new proofs when re-initializing
     // TODO: verify proofs
+    // TODO: include own proofs in this
 
     if (!(await folderExists(proofsCachePath))) {
       return;

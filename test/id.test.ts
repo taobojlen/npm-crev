@@ -1,7 +1,7 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import * as tmp from "tmp";
-import * as path from "path";
+import path from "path";
 import { promises as fs } from "fs";
 import sinon from "sinon";
 

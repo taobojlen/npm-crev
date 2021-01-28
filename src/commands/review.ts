@@ -1,22 +1,16 @@
 import { spawn } from "child_process";
-import path from "path";
-import { promises as fs } from "fs";
 
 import { Command, flags } from "@oclif/command";
 import chalk from "chalk";
 
 import { fetchNpmPackage, getNpmDownloadPath } from "../npm";
-import { Level, PackageDetails, Rating } from "../types";
+import { Level, levels, PackageDetails, Rating, ratings } from "../types";
 import { prompt } from "enquirer";
 import { createPackageReview } from "../proofs";
 import recursiveDigest from "../recursiveDigest";
 import { toBase64 } from "../crypto/util";
 import { getUnsealedCrevId } from "../commandHelpers";
 
-interface PackageAndVersion {
-  packageName: string;
-  version: string;
-}
 const LEVEL_CHOICES = [
   { name: "high" },
   { name: "medium" },
@@ -38,6 +32,19 @@ export default class Review extends Command {
   static flags = {
     help: flags.help({ char: "h" }),
     version: flags.string({ char: "v", description: "the version to review" }),
+    thoroughness: flags.string({
+      description: "how thoroughly you reviewed the package",
+      options: [...levels],
+    }),
+    understanding: flags.string({
+      description: "how well you understood the code",
+      options: [...levels],
+    }),
+    rating: flags.string({ description: "your rating of the package", options: [...ratings] }),
+    comment: flags.string({ description: "an optional comment for your package review" }),
+    "skip-comment": flags.boolean({
+      description: "don't prompt for a comment if one isn't passed",
+    }),
   };
 
   static args = [{ name: "package", description: "the name of the package to review" }];
@@ -69,12 +76,13 @@ export default class Review extends Command {
    * actually create the review
    */
   private async finalizePackageReview() {
-    const packagePath = getNpmDownloadPath(
-      process.env["CREV_PACKAGE"]!,
-      process.env["CREV_PACKAGE_VERSION"]!
-    );
+    const { flags } = this.parse(Review);
+
+    const packageName = process.env["CREV_PACKAGE"]!;
+    const version = process.env["CREV_PACKAGE_VERSION"]!;
+
+    const packagePath = getNpmDownloadPath(packageName, version);
     const id = await getUnsealedCrevId(this);
-    const { packageName, version } = await this.readPackageJson();
     const digest = toBase64(await recursiveDigest(packagePath));
     const packageDetails: PackageDetails = {
       source: "npm",
@@ -83,10 +91,17 @@ export default class Review extends Command {
       digest,
     };
 
-    const thoroughness = await this.getThoroughness();
-    const understanding = await this.getUnderstanding();
-    const rating = await this.getRating();
-    const comment = await this.getComment();
+    const thoroughness = (flags.thoroughness as Level) || (await this.getThoroughness());
+    const understanding = (flags.understanding as Level) || (await this.getUnderstanding());
+    const rating = (flags.rating as Rating) || (await this.getRating());
+    let comment;
+    if (flags.comment) {
+      comment = flags.comment;
+    } else if (flags["skip-comment"]) {
+      // do nothing
+    } else {
+      comment = await this.getComment();
+    }
     await createPackageReview(id, packageDetails, thoroughness, understanding, rating, comment);
     this.log(`Saved your review of ${packageName}@${version}.`);
     this.log(`Make sure to share your reviews by running ${chalk.blue("crev repo:publish")}`);
@@ -103,12 +118,6 @@ export default class Review extends Command {
       },
       stdio: "inherit",
     });
-  }
-
-  private async readPackageJson(): Promise<PackageAndVersion> {
-    const packageJsonPath = path.resolve(process.cwd(), "package.json");
-    const packageJson = JSON.parse((await fs.readFile(packageJsonPath)).toString());
-    return { packageName: packageJson.name, version: packageJson.version };
   }
 
   private async getThoroughness(): Promise<Level> {

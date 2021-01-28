@@ -1,4 +1,4 @@
-import * as path from "path";
+import path from "path";
 
 import { Command, flags } from "@oclif/command";
 import cli from "cli-ux";

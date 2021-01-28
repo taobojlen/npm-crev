@@ -1,5 +1,5 @@
 import envPaths from "env-paths";
-import * as path from "path";
+import path from "path";
 import { blake2bHash } from "./crypto/hashes";
 import { toBase64 } from "./crypto/util";
 

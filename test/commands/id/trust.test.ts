@@ -1,17 +1,34 @@
-// import {expect, test} from '@oclif/test'
+import { expect, test } from "@oclif/test";
+import mockFs from "mock-fs";
 
-// describe('trust', () => {
-//   test
-//   .stdout()
-//   .command(['trust'])
-//   .it('runs hello', ctx => {
-//     expect(ctx.stdout).to.contain('hello world')
-//   })
+import { mockFoldersWithCrevId } from "../../helpers";
 
-//   test
-//   .stdout()
-//   .command(['trust', '--name', 'jeff'])
-//   .it('runs hello --name jeff', ctx => {
-//     expect(ctx.stdout).to.contain('hello jeff')
-//   })
-// })
+describe("id:trust", () => {
+  test
+    .do(() => {
+      mockFoldersWithCrevId();
+    })
+    .finally(() => {
+      mockFs.restore();
+    })
+    .stdin("hello\n") // password for the current crev ID
+    .stdout()
+    .command(["id:trust", "--level", "high", "--comment", "'lorem ipsum'", "abc1"])
+    .it("trusts an ID", (ctx) => {
+      expect(ctx.stdout).to.contain("Successfully trusted 1 user");
+    });
+
+  test
+    .do(() => {
+      mockFoldersWithCrevId();
+    })
+    .finally(() => {
+      mockFs.restore();
+    })
+    .stdin("hello\n") // password for the current crev ID
+    .stdout()
+    .command(["id:trust", "--level", "high", "--comment", "'lorem ipsum'", "abc1,abc2"])
+    .it("trusts multiple IDs", (ctx) => {
+      expect(ctx.stdout).to.contain("Successfully trusted 2 users");
+    });
+});
