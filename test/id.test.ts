@@ -1,9 +1,9 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import * as tmp from "tmp";
 import path from "path";
 import { promises as fs } from "fs";
 import sinon from "sinon";
+import mockFs from "mock-fs";
 
 import { fromBase64, toBase64 } from "../src/crypto/util";
 import { unsealCrevId, generateCrevId } from "../src/id";
@@ -11,6 +11,7 @@ import * as paths from "../src/paths";
 import * as cryptoUtil from "../src/crypto/util";
 import * as cryptoSignatures from "../src/crypto/signatures";
 import * as cryptoHashes from "../src/crypto/hashes";
+import { mockCoreFolders } from "./helpers";
 
 chai.use(chaiAsPromised);
 const sandbox = sinon.createSandbox();
@@ -43,9 +44,7 @@ describe("unsealCrevId", async () => {
 });
 
 describe("generateCrevId", async () => {
-  const randomTmpDir = tmp.dirSync({ unsafeCleanup: true }).name;
   beforeEach(() => {
-    sandbox.stub(paths, "getIdsDirPath").returns(randomTmpDir);
     sandbox.stub(cryptoHashes, "getDefaultArgon2Options").returns({
       version: 19,
       variant: "argon2id",
@@ -53,9 +52,11 @@ describe("generateCrevId", async () => {
       memorySize: 4096,
       lanes: 4,
     });
+    mockCoreFolders();
   });
   afterEach(() => {
     sandbox.restore();
+    mockFs.restore();
   });
 
   it("generates a valid ID", async () => {
@@ -79,7 +80,7 @@ describe("generateCrevId", async () => {
       publicKey,
       privateKey,
     });
-    const generatedId = await fs.readFile(path.join(randomTmpDir, `${publicKeyB64}.yaml`));
+    const generatedId = await fs.readFile(path.join(paths.getIdsDirPath(), `${publicKeyB64}.yaml`));
     const expectedId = await fs.readFile(path.join("test/data/config/ids", `${publicKeyB64}.yaml`));
     expect(generatedId.toString()).to.equal(expectedId.toString());
   });

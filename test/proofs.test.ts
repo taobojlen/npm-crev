@@ -2,25 +2,23 @@ import { promises as fs } from "fs";
 
 import { expect } from "chai";
 import sinon from "sinon";
-import tmp from "tmp";
+import mockFs from "mock-fs";
 
 import { PackageDetails, User } from "../src/types";
-import * as paths from "../src/paths";
 import { createTrustProofs, createPackageReview } from "../src/proofs";
 import { getCurrentCrevId, unsealCrevId } from "../src/id";
 import { toBase64 } from "../src/crypto/util";
+import { mockFoldersWithCrevId } from "./helpers";
 
 const clock = new Date("2021-01-18T18:42:14.956Z");
-const tmpDir = tmp.dirSync({ unsafeCleanup: true }).name;
 
 describe("proofs", () => {
   beforeEach(() => {
-    sinon.stub(paths, "getProofsDirPath").returns(`${tmpDir}/proofs`);
-    sinon.stub(paths, "getConfigFilePath").returns("test/data/config/config.yaml");
-    sinon.stub(paths, "getIdsDirPath").returns("test/data/config/ids");
+    mockFoldersWithCrevId();
     sinon.useFakeTimers(clock.getTime());
   });
   afterEach(() => {
+    mockFs.restore();
     sinon.restore();
   });
 
