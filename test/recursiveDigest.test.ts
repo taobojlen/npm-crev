@@ -6,7 +6,7 @@ import chaiBytes from "chai-bytes";
 import mockFs from "mock-fs";
 
 import { blake2bHash } from "../src/crypto/hashes";
-import recursiveDigest from "../src/recursiveDigest";
+import { recursiveDigest } from "../src/recursiveDigest";
 
 chai.use(chaiBytes);
 

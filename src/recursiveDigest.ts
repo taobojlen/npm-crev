@@ -55,7 +55,7 @@ const hashDirectory = async (dirPath: string): Promise<Buffer> => {
   return hashWithPrefix("D", Buffer.concat(dirContentHashes));
 };
 
-export default async (pathToHash: string): Promise<Buffer> => {
+export const recursiveDigest = async (pathToHash: string): Promise<Buffer> => {
   const stat = await statFileOrSymlink(pathToHash);
   if (stat.isFile()) {
     return hashFile(pathToHash);

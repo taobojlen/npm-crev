@@ -7,7 +7,7 @@ import { fetchNpmPackage, getNpmDownloadPath } from "../npm";
 import { Level, levels, PackageDetails, Rating, ratings } from "../types";
 import { prompt } from "enquirer";
 import { createPackageReview } from "../proofs";
-import recursiveDigest from "../recursiveDigest";
+import { recursiveDigest } from "../recursiveDigest";
 import { toBase64 } from "../crypto/util";
 import { getUnsealedCrevId } from "../commandHelpers";
 

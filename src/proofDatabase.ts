@@ -94,8 +94,8 @@ export default class ProofDatabase {
     // Find verification status
     // First, filter reviews of the package to the ones we trust
     const trustedReviewers = paths.map((trustPath) => {
-      const finalEdgeKey = trustPath[-1] as string;
-      return finalEdgeKey.split("->")[-1];
+      const finalEdgeKey = trustPath.pop() as string;
+      return finalEdgeKey.split("->").pop();
     });
     const trustedReviews = reviews.filter((review) => trustedReviewers.includes(review.from.id));
 
@@ -134,10 +134,14 @@ export default class ProofDatabase {
   private addUser(user: User): void {
     // TODO: only set url / other attributes if they come from the user themself
     const { id } = user;
-    this.trustGraph.updateNode(id, (attr) => ({
-      ...attr,
-      ...user,
-    }));
+    if (this.trustGraph.hasNode(id)) {
+      this.trustGraph.updateNode(id, (attr) => ({
+        ...attr,
+        ...user,
+      }));
+    } else {
+      this.trustGraph.addNode(id, user);
+    }
   }
 
   /**

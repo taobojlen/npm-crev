@@ -3,6 +3,8 @@ import { promises as fs } from "fs";
 import path from "path";
 import FileSystem from "mock-fs/lib/filesystem";
 import { getConfigFilePath, getIdsDirPath, getProofsDirPath, proofsCachePath } from "../src/paths";
+import { CrevId, User } from "../src/types";
+import { toBase64 } from "../src/crypto/util";
 
 export const listFiles = async (directoryPath: string): Promise<string[]> => {
   const files = await fs.readdir(directoryPath);
@@ -52,4 +54,12 @@ export const mockFoldersWithCrevId = (
   };
 
   mockCoreFolders(mockFsConf, options);
+};
+
+export const crevIdToUser = (id: CrevId): User => {
+  return {
+    idType: "crev",
+    id: toBase64(id.publicKey),
+    url: id.url,
+  };
 };

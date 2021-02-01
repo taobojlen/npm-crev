@@ -34,7 +34,7 @@ npm-crev is far from done, but under active development. **It has not been audit
 - [x] Fetching repos
 - [x] Trusting others
 - [x] Reviewing packages
-- [ ] Integration tests of commands
+- [x] Integration tests of most commands
 - [ ] Pushing proof repos
 - [ ] Support for npm <7 and yarn
 - [ ] Customization of verification parameters (what does trust mean to you?)
@@ -59,14 +59,19 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`crev fetch`](#crev-fetch)
-* [`crev help [COMMAND]`](#crev-help-command)
-* [`crev id:create`](#crev-idcreate)
-* [`crev id:list`](#crev-idlist)
-* [`crev id:trust IDS`](#crev-idtrust-ids)
-* [`crev id:use [ID]`](#crev-iduse-id)
-* [`crev review [PACKAGE]`](#crev-review-package)
-* [`crev verify [LOCKFILE]`](#crev-verify-lockfile)
+- [crev](#crev)
+- [Introduction](#introduction)
+  - [To do:](#to-do)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`crev fetch`](#crev-fetch)
+  - [`crev help [COMMAND]`](#crev-help-command)
+  - [`crev id:create`](#crev-idcreate)
+  - [`crev id:list`](#crev-idlist)
+  - [`crev id:trust IDS`](#crev-idtrust-ids)
+  - [`crev id:use [ID]`](#crev-iduse-id)
+  - [`crev review [PACKAGE]`](#crev-review-package)
+  - [`crev verify [LOCKFILE]`](#crev-verify-lockfile)
 
 ## `crev fetch`
 
@@ -156,7 +161,10 @@ ARGUMENTS
   IDS  comma-separated list of IDs to trust
 
 OPTIONS
-  -h, --help  show CLI help
+  -h, --help                             show CLI help
+  --comment=comment                      an optional comment for your trust proof
+  --level=distrust|none|low|medium|high  how much you trust the IDs
+  --skip-comment                         don't prompt for a comment if one isn't passed
 ```
 
 _See code: [src/commands/id/trust.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/id/trust.ts)_
@@ -187,8 +195,13 @@ ARGUMENTS
   PACKAGE  the name of the package to review
 
 OPTIONS
-  -h, --help             show CLI help
-  -v, --version=version  the version to review
+  -h, --help                                 show CLI help
+  -v, --version=version                      the version to review
+  --comment=comment                          an optional comment for your package review
+  --rating=strong|positive|neutral|negative  your rating of the package
+  --skip-comment                             don't prompt for a comment if one isn't passed
+  --thoroughness=none|low|medium|high        how thoroughly you reviewed the package
+  --understanding=none|low|medium|high       how well you understood the code
 ```
 
 _See code: [src/commands/review.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/review.ts)_
@@ -205,7 +218,15 @@ ARGUMENTS
   LOCKFILE  path to a npm lockfile
 
 OPTIONS
-  -h, --help  show CLI help
+  -h, --help              show CLI help
+  -x, --extended          show extra columns
+  --columns=columns       only show provided columns (comma-separated)
+  --csv                   output is csv format [alias: --output=csv]
+  --filter=filter         filter property by partial string matching, ex: name=foo
+  --no-header             hide table header from output
+  --no-truncate           do not truncate output to fit screen
+  --output=csv|json|yaml  output in a more machine friendly format
+  --sort=sort             property to sort by (prepend '-' for descending)
 ```
 
 _See code: [src/commands/verify.ts](https://github.com/taobojlen/npm-crev/blob/v0.0.0/src/commands/verify.ts)_

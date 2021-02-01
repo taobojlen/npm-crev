@@ -7,13 +7,13 @@ import chalk from "chalk";
 import ProofDatabase from "../proofDatabase";
 import { fileExists, folderExists } from "../util";
 import PackageLock2 from "../lockfile/packageLock2";
-import recursiveDigest from "../recursiveDigest";
+import { recursiveDigest } from "../recursiveDigest";
 import { toBase64 } from "../crypto/util";
 import { assertCrevIdExists } from "../commandHelpers";
 import { DependencyType } from "../types";
 
 interface DependencyRow {
-  dependency: string;
+  name: string;
   type: DependencyType;
   version: string;
   status?: string;
@@ -25,6 +25,7 @@ export default class Verify extends Command {
 
   // TODO: add flag to also verify transitive dependencies
   static flags = {
+    ...cli.table.flags(),
     help: flags.help({ char: "h" }),
   };
 
@@ -33,7 +34,7 @@ export default class Verify extends Command {
   async run(): Promise<void> {
     const currentId = await assertCrevIdExists(this);
 
-    const { args } = this.parse(Verify);
+    const { args, flags } = this.parse(Verify);
     let lockfilePaths;
     if (args.lockfile) {
       lockfilePaths = [args.lockfile];
@@ -88,7 +89,7 @@ export default class Verify extends Command {
     const dependencies = await lockfile.getDependencies();
 
     const proofDb = new ProofDatabase(toBase64(currentId.publicKey));
-    proofDb.initialize();
+    await proofDb.initialize();
 
     const rows: DependencyRow[] = await Promise.all(
       dependencies.map(async ({ name, version, type }) => {
@@ -104,7 +105,7 @@ export default class Verify extends Command {
         const { status, reviewCount } = proofDb.verify(digest);
 
         return {
-          dependency: name,
+          name,
           version,
           type,
           status,
@@ -116,14 +117,14 @@ export default class Verify extends Command {
     cli.table(
       rows,
       {
-        dependency: {},
+        name: {},
         version: {},
         type: {},
         status: {},
         reviews: {},
       },
       {
-        sort: "-type,name",
+        sort: flags.sort || "-type,name",
       }
     );
   }
