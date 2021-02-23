@@ -61,7 +61,7 @@
     "hosted-git-info": "^3.0.7",
     "humps": "^2.0.1",
     "js-yaml": "^4.0.0",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "miscreant": "^0.3.2",
     "node-fetch": "^2.6.1",
     "sodium-native": "^3.2.0",
