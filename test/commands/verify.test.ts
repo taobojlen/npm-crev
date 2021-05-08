@@ -52,7 +52,7 @@ describe("verify", () => {
     await updateCurrentIdConfig(toBase64(alice.publicKey));
 
     // Move the created reviews / trust proofs to the folder where our DB will load them
-    await fs.rm(proofsCachePath, { recursive: true, force: true });
+    await fs.rmdir(proofsCachePath, { recursive: true });
     await fs.rename(getProofsDirPath(), proofsCachePath);
   });
   after(() => {
