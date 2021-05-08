@@ -42,7 +42,7 @@
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
     "pretest": "npm run lint",
-    "test": "nyc --reporter=lcov --reporter=text --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "test": "nyc --reporter=lcov --reporter=text --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --timeout 10000",
     "version": "oclif-dev readme && git add README.md"
   },
   "types": "lib/index.d.ts",
