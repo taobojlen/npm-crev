@@ -49,7 +49,7 @@
   "dependencies": {
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
-    "@oclif/plugin-help": "^3.2.2",
+    "@oclif/plugin-help": "^3.3.0",
     "argon2": "^0.27.2",
     "chai-bytes": "^0.1.2",
     "cli-ux": "^5.5.1",
