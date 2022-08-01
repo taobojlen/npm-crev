@@ -63,7 +63,7 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "miscreant": "^0.3.2",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.2.10",
     "sodium-native": "^3.2.0",
     "tar-fs": "^2.1.1",
     "tslib": "^2.2.0"
